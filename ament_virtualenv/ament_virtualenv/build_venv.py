@@ -125,14 +125,14 @@ def build_venv(root_dir,
     deploy = Deployment(
         package=os.path.basename(root_dir),
         requirements_filename=requirements_filename,
-        upgrade_pip=True,
+        upgrade_pip=False,
         use_system_packages=use_system_packages,
         python=python_executable,
         extra_pip_arg=extra_pip_args.split(' '),
         log_file=None,
         builtin_venv=check_module(python_executable, 'venv'),
         builtin_pip=check_module(python_executable, 'pip'),
-        pip_version='19.0.3'  # (pbovbel) known working version
+        pip_version=None  # (pbovbel) known working version
     )
 
     while True:

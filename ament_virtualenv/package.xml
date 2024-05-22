@@ -35,15 +35,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <test_depend>python3-pytest</test_depend>
 
   <build_depend>python3-packaging</build_depend>
-  <build_depend>python-virtualenv</build_depend>
+  <build_depend>python3-venv</build_depend>
+  <build_depend>python3-packaging</build_depend>
   <buildtool_depend>python3-packaging</buildtool_depend>
-  <buildtool_depend>python-virtualenv</buildtool_depend>
+  <buildtool_depend>python3-venv</buildtool_depend>
   <build_export_depend>python3-packaging</build_export_depend>
-  <build_export_depend>python-virtualenv</build_export_depend>
+  <build_export_depend>python3-venv</build_export_depend>
   <exec_depend>python3-packaging</exec_depend>
-  <exec_depend>python-virtualenv</exec_depend>
+  <exec_depend>python3-venv</exec_depend>
   <test_depend>python3-packaging</test_depend>
-  <test_depend>python-virtualenv</test_depend>
+  <test_depend>python3-venv</test_depend>
 
   <export>
     <build_type>ament_python</build_type>

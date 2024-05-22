@@ -13,10 +13,10 @@ endif()
 find_package(ament_cmake REQUIRED)
 
 find_package(ament_cmake_virtualenv REQUIRED)
-ament_generate_virtualenv(PYTHON_VERSION 2)
+ament_generate_virtualenv(PYTHON_VERSION 3)
 
-ament_python_install_module(test_ament_cmake_virtualenv/test_ament_cmake_virtualenv-as_module.py)
-ament_python_install_package(test_ament_cmake_virtualenv/as_package)
+#ament_python_install_module(test_ament_cmake_virtualenv/test_ament_cmake_virtualenv-as_module.py)
+#ament_python_install_package(test_ament_cmake_virtualenv/as_package)
 
 install(FILES requirements.txt
   DESTINATION ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME})

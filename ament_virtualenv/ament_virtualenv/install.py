@@ -61,7 +61,7 @@ def find_program(name='build_venv.py', package='ament_virtualenv'):
 #
 
 
-def install_venv(install_base, package_name, python_version='2'):
+def install_venv(install_base, package_name, python_version='3'):
     venv_install_dir = os.path.join(install_base, 'venv')
     bin_dir = os.path.join(install_base, 'bin')
     #
@@ -152,6 +152,9 @@ def install_venv(install_base, package_name, python_version='2'):
             extra_pip_args="-qq",
             retries=3
         )
+
+    if not os.path.exists(bin_dir):
+        return 0
     #
     # Wrapper shell executables we installed
     for bin_file in os.listdir(bin_dir):
