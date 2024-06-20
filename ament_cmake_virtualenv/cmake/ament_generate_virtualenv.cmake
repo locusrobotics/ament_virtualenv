@@ -139,8 +139,13 @@ function(ament_generate_virtualenv)
     _ament_cmake_python_install_module(${ARGN})
     get_filename_component(module_path ${ARGN} NAME)
     set(module_path "${CMAKE_INSTALL_PREFIX}/${PYTHON_INSTALL_DIR}/${module_path}")
-    # message(WARNING "[ament_cmake_virtualenv]: ament_python_install_module override for ${module_path} to ${${PROJECT_NAME}_VENV_INSTALL_DIR}")
-    install(CODE "execute_process(COMMAND ${wrap_module_BIN} --module-path ${module_path} --venv-install-dir ${${PROJECT_NAME}_VENV_INSTALL_DIR})")
+    # message(
+    #   WARNING "[ament_cmake_virtualenv]: ament_python_install_module override for ${module_path} to ${${PROJECT_NAME}_VENV_INSTALL_DIR}"
+    # )
+    install(
+      CODE "execute_process(\
+COMMAND ${wrap_module_BIN} --module-path ${module_path} --venv-install-dir ${${PROJECT_NAME}_VENV_INSTALL_DIR})"
+    )
   endmacro()
 
   # Override the ament_python_install_package macro to wrap packages
@@ -153,7 +158,12 @@ function(ament_generate_virtualenv)
     _ament_cmake_python_register_environment_hook()
     _ament_cmake_python_install_package(${ARGN})
     set(package_dir "${CMAKE_INSTALL_PREFIX}/${PYTHON_INSTALL_DIR}/${ARGN}")
-    # message(WARNING "[ament_cmake_virtualenv]: ament_python_install_package override for ${package_dir} to ${${PROJECT_NAME}_VENV_INSTALL_DIR}")
-    install(CODE "execute_process(COMMAND ${wrap_package_BIN} --package-dir ${package_dir} --venv-install-dir ${${PROJECT_NAME}_VENV_INSTALL_DIR})")
+    # message(
+    #   WARNING "[ament_cmake_virtualenv]: ament_python_install_package override for ${package_dir} to ${${PROJECT_NAME}_VENV_INSTALL_DIR}"
+    # )
+    install(
+      CODE "execute_process(\
+COMMAND ${wrap_package_BIN} --package-dir ${package_dir} --venv-install-dir ${${PROJECT_NAME}_VENV_INSTALL_DIR})"
+    )
   endmacro()
 endfunction()
