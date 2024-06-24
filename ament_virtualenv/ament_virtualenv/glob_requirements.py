@@ -40,6 +40,17 @@ except ImportError:
     from Queue import Queue
 
 
+def _find_package_in_path(package, path):
+    if os.path.exists(f"{path}/share/{package}"):
+        # Local workspace
+        if os.path.exists(f"{path}/share/../../src"):
+            return f"{path}/share/../../src"
+        else:
+            return f"{path}/share"
+    else:
+        return None
+
+
 def find_in_workspaces(project, file, workspaces=[]):
     # Add default workspace search paths
     ament_paths = os.environ.get('AMENT_PREFIX_PATH')
@@ -47,10 +58,9 @@ def find_in_workspaces(project, file, workspaces=[]):
         # AMENT_PREFIX_PATH points at install/<package>
         ament_paths = ament_paths.split(os.pathsep)
         for path in ament_paths:
-            if ((os.path.sep + 'install' + os.path.sep) in path or
-               (os.path.sep + 'install_isolated' + os.path.sep) in path):
-                workspaces.append(os.path.join(path, '..'))
-                workspaces.append(os.path.join(path, '..', '..', 'src'))
+            found = _find_package_in_path(project, path)
+            if found:
+                workspaces.append(found)
                 break
     if len(workspaces) == 0:
         # if AMENT_PREFIX_PATH wasn't set, we can fall back on
@@ -60,10 +70,9 @@ def find_in_workspaces(project, file, workspaces=[]):
             # CMAKE_PREFIX_PATH points at install/<package> or install_isolated/<package>
             cmake_paths = cmake_paths.split(os.pathsep)
             for path in cmake_paths:
-                if ((os.path.sep + 'install' + os.path.sep) in path or
-                   (os.path.sep + 'install_isolated' + os.path.sep) in path):
-                    workspaces.append(os.path.join(path, '..'))
-                    workspaces.append(os.path.join(path, '..', '..', 'src'))
+                found = _find_package_in_path(project, path)
+                if found:
+                    workspaces.append(found)
                     break
     if len(workspaces) == 0:
         # COLCON_PREFIX_PATH points to the `install/` directory,
