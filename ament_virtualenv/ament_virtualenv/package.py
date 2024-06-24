@@ -103,7 +103,10 @@ class Package(object):
                         slot.append(deepcopy(d))
             del kwargs['run_depends']
         self.filename = filename
-        self.licenses = [l if isinstance(l, License) else License(l) for l in self.licenses]
+        self.licenses = [
+            licence if isinstance(licence, License) else
+            License(licence) for licence in self.licenses
+        ]
         # verify that no unknown keywords are passed
         unknown = set(kwargs.keys()).difference(self.__slots__)
         if unknown:
@@ -217,7 +220,7 @@ class Package(object):
                     'with a lower case letter and only contain lower case letters, digits, '
                     'underscores, and dashes.' % self.name)
 
-        version_regexp = '^[0-9]+\.[0-9]+\.[0-9]+$'
+        version_regexp = '^[0-9]+\.[0-9]+\.[0-9]+$'  # noqa: W605
         if not self.version:
             errors.append('Package version must not be empty')
         elif not re.match(version_regexp, self.version):
@@ -225,7 +228,10 @@ class Package(object):
                 'Package version "%s" does not follow version conventions'
                 % self.version
             )
-        elif not re.match('^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$', self.version):
+        elif not re.match(
+            '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$',  # noqa: W605
+            self.version
+        ):
             new_warnings.append(
                 'Package "%s" does not follow the version conventions. '
                 'It should not contain leading zeros (unless the number is 0).' % self.name
@@ -251,7 +257,7 @@ class Package(object):
 
         if not self.licenses:
             errors.append('The package node must contain at least one "license" tag')
-        if [l for l in self.licenses if not l.strip()]:
+        if [license for license in self.licenses if not license.strip()]:
             errors.append('The license tag must neither be empty nor only contain whitespaces')
 
         if self.authors is not None:
@@ -389,8 +395,8 @@ class Person(object):
         if self.email is None:
             return
         _pattern = (
-            '^[-a-zA-Z0-9_%+]+(\.[-a-zA-Z0-9_%+]+)*'
-            '@[-a-zA-Z0-9%]+(\.[-a-zA-Z0-9%]+)*\.[a-zA-Z]{2,}$'
+            '^[-a-zA-Z0-9_%+]+(\.[-a-zA-Z0-9_%+]+)*'  # noqa: W605
+            '@[-a-zA-Z0-9%]+(\.[-a-zA-Z0-9%]+)*\.[a-zA-Z]{2,}$'  # noqa: W605
         )
         if not re.match(_pattern, self.email):
             raise InvalidPackage('Invalid email "%s" for person "%s"' % (self.email, self.name))

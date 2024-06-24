@@ -26,6 +26,9 @@ import argparse
 import sys
 import os
 
+from typing import List
+from catkin_pkg.package import Package
+
 try:
     from ament_virtualenv.package import parse_package
 except ImportError:
@@ -112,8 +115,7 @@ def find_in_workspaces(project, file, workspaces=[]):
 AMENT_VIRTUALENV_TAGNAME = "pip_requirements"
 
 
-def parse_exported_requirements(package):
-    # type: (catkin_pkg.package.Package) -> List[str]
+def parse_exported_requirements(package: Package) -> List[str]:
     requirements_list = []
     for export in package.exports:
         if export.tagname == AMENT_VIRTUALENV_TAGNAME:

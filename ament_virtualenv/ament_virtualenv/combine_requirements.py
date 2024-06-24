@@ -26,6 +26,8 @@ import argparse
 import re
 import sys
 
+from typing import List, Dict
+from io import TextIOWrapper
 from collections import namedtuple
 from packaging.requirements import Requirement, InvalidRequirement
 
@@ -43,9 +45,10 @@ CombinedRequirement = namedtuple("CombinedRequirement", "requirement source supp
 SuppressedRequirement = namedtuple("SuppressedRequirement", "requirement source")
 
 
-def combine_requirements(requirements_list, output_file):
-    # type: (List[IO], IO) -> int
-    combined_requirements = {}  # type: Dict[str, requirements.Requirement]
+def combine_requirements(
+    requirements_list: List[TextIOWrapper], output_file: TextIOWrapper
+) -> int:
+    combined_requirements: Dict[str, Requirement] = {}
     for requirements_file in requirements_list:
         contents = requirements_file.read()
 
