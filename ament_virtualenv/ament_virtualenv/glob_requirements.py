@@ -24,10 +24,11 @@ from __future__ import print_function
 
 import argparse
 import sys
+import os
 
 from typing import List
 from catkin_pkg.package import Package
-from catkin.find_in_workspaces import find_in_workspaces
+from ament_index_python.packages import get_package_share_directory, PackageNotFoundError
 
 try:
     from ament_virtualenv.package import parse_package
@@ -50,11 +51,12 @@ def parse_exported_requirements(package: Package) -> List[str]:
     requirements_list = []
     for export in package.exports:
         if export.tagname == AMENT_VIRTUALENV_TAGNAME:
-            requirements_path = find_in_workspaces(
-                project=package.name,
-                path=export.content,
-                first_match_only=True
-            )[0]
+            package_path = get_package_share_directory(package.name)
+            if os.path.exists(f"{package_path}/{export.content}"):
+                requirements_path = f"{package_path}/{export.content}"
+            else:
+                requirements_path = None
+
             if not requirements_path:
                 print(
                     ("[ERROR] ament_virtualenv "
@@ -74,15 +76,11 @@ def parse_exported_requirements(package: Package) -> List[str]:
 def process_package(package_name, soft_fail=True):
     # type: (str) -> List[str], List[str]
     try:
-        package_path = find_in_workspaces(
-            project=package_name, path="package.xml", first_match_only=True,
-        )[0]
-    except IndexError:
-        if not soft_fail:
-            raise RuntimeError("Unable to process package {}".format(package_name))
-        else:
-            # This is not an ament dependency
-            return [], []
+        package_path = get_package_share_directory(package_name)
+    except PackageNotFoundError:
+        # This is used to parse all dependencies listed in package.xml which
+        # may be dependences that are not ROS packages.
+        return [], []
     else:
         package = parse_package(package_path)
         dependencies = package.build_depends + package.test_depends
