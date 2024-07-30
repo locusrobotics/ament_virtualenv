@@ -153,6 +153,8 @@ def install_venv(install_base, package_name, python_version='3'):
             retries=3
         )
 
+    return 0
+
     if not os.path.exists(bin_dir):
         return 0
     #
