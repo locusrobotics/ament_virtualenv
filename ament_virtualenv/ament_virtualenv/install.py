@@ -28,6 +28,8 @@ import subprocess
 import shutil
 import argparse
 from setuptools.command.install import install
+from setuptools import Distribution
+from typing import List, Dict
 
 try:
     from ament_virtualenv.glob_requirements import glob_requirements
@@ -63,12 +65,12 @@ def find_program(name='build_venv.py', package='ament_virtualenv'):
 
 
 def install_venv(
-        install_base,
-        package_name,
-        scripts_base,
-        scripts=[],
-        python_version='3',
-        use_system_packages=True
+        install_base: str,
+        package_name: str,
+        scripts_base: str,
+        scripts: List[str] = [],
+        python_version: str = '3',
+        use_system_packages: bool = True
 ):
     venv_install_dir = os.path.join(install_base, 'venv')
     #
@@ -201,7 +203,7 @@ def install_venv(
     return 0
 
 
-def _get_console_scripts(entry_points: dict):
+def _get_console_scripts(entry_points: Dict[str, List[str]]) -> List[str]:
     if "console_scripts" not in entry_points:
         return []
 
@@ -213,7 +215,7 @@ def _get_console_scripts(entry_points: dict):
     return ret
 
 
-def _get_extra_arguments(distribution):
+def _get_extra_arguments(distribution: Distribution) -> Dict[str, str]:
     if "ament_virtualenv" not in distribution.command_options:
         return {}
 
