@@ -27,6 +27,9 @@ import sys
 import subprocess
 import shutil
 import argparse
+from setuptools.command.install import install
+from setuptools import Distribution
+from typing import List, Dict
 
 try:
     from ament_virtualenv.glob_requirements import glob_requirements
@@ -61,9 +64,15 @@ def find_program(name='build_venv.py', package='ament_virtualenv'):
 #
 
 
-def install_venv(install_base, package_name, python_version='3'):
+def install_venv(
+        install_base: str,
+        package_name: str,
+        scripts_base: str,
+        scripts: List[str] = [],
+        python_version: str = '3',
+        use_system_packages: bool = True
+):
     venv_install_dir = os.path.join(install_base, 'venv')
-    bin_dir = os.path.join(install_base, 'bin')
     #
     # Build the virtual environment
     python = shutil.which("python3")
@@ -148,25 +157,29 @@ def install_venv(install_base, package_name, python_version='3'):
             root_dir=venv_install_dir,
             python_version=python_version,
             requirements_filename=generated_requirements,
-            use_system_packages=False,
+            use_system_packages=use_system_packages,
             extra_pip_args="-qq",
             retries=3
         )
 
-    if not os.path.exists(bin_dir):
+    if not os.path.exists(scripts_base):
         return 0
     #
     # Wrapper shell executables we installed
-    for bin_file in os.listdir(bin_dir):
+    for bin_file in os.listdir(scripts_base):
         if bin_file[-5:] == '-venv':
             # possible left-over from last installation
             continue
+
+        if scripts and bin_file not in scripts:
+            continue
+
         # rename file from 'xxx' to 'xxx-venv'
-        bin_path = os.path.join(bin_dir, bin_file)
+        bin_path = os.path.join(scripts_base, bin_file)
         if not os.path.isfile(bin_path):
             continue
         os.rename(bin_path, bin_path + '-venv')
-        venv_rel_path = os.path.relpath(venv_install_dir, bin_dir)
+        venv_rel_path = os.path.relpath(venv_install_dir, scripts_base)
         # create new file with the name of the previous file
         with open(bin_path, "w") as f:
             f.write("#!/usr/bin/python3\n")
@@ -190,6 +203,45 @@ def install_venv(install_base, package_name, python_version='3'):
     return 0
 
 
+def _get_console_scripts(entry_points: Dict[str, List[str]]) -> List[str]:
+    if "console_scripts" not in entry_points:
+        return []
+
+    ret = []
+
+    for script in entry_points["console_scripts"]:
+        ret.append(script.split("=")[0].strip())
+
+    return ret
+
+
+def _get_extra_arguments(distribution: Distribution) -> Dict[str, str]:
+    if "ament_virtualenv" not in distribution.command_options:
+        return {}
+
+    options = {}
+
+    for opt, val in distribution.command_options["ament_virtualenv"].items():
+        # setuptools doesn't just use the value as-is, and creates a tuple
+        # with the value as the second item
+        options[opt] = val[1]
+
+    return options
+
+
+class AmentVirtualenvInstall(install):
+    def run(self):
+        super().run()
+
+        install_venv(
+            install_base=self.install_base,
+            package_name=self.config_vars["dist_name"],
+            scripts_base=self.install_scripts,
+            scripts=_get_console_scripts(self.distribution.entry_points),
+            **_get_extra_arguments(self.distribution)
+        )
+
+
 def main(argv=sys.argv[1:]):
     parser = argparse.ArgumentParser()
     parser.add_argument('--install-base', required=True)
@@ -199,6 +251,10 @@ def main(argv=sys.argv[1:]):
     return install_venv(
         install_base=args.install_base,
         package_name=args.package_name,
+        #
+        # TODO: This may need to change, but so it runs...
+        #
+        scripts_base=f"{args.install_base}/lib/{args.package_name}",
         python_version=args.python_version
     )
 
