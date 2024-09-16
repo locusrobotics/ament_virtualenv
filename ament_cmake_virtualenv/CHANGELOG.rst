@@ -2,6 +2,11 @@
 Changelog for package ament_cmake_virtualenv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Package wide linting fixes (#2)
+* Contributors: James Prestwood
+
 0.0.5 (2020-01-10)
 ------------------
 * fixed various bugs identified by CI
