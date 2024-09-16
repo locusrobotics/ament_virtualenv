@@ -5,7 +5,7 @@ package_name = 'ament_virtualenv'
 
 setup(
     name=package_name,
-    version='0.0.5',
+    version='0.1.0',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/' + package_name, ['package.xml']),
