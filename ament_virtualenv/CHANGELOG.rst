@@ -2,6 +2,9 @@
 Changelog for package ament_virtualenv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.1.0 (2024-09-16)
 ------------------
 * Wrap binaries under install/lib/{PACKAGE}, not top level (#5)
