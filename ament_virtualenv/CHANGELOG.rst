@@ -2,6 +2,14 @@
 Changelog for package ament_virtualenv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Rename "install" to "install_venv" (#6)
+  This script conflicts with the linux tool "install" which is used
+  at least by preflight. Since this script isn't even used by
+  anything as far as the build system goes rename it to "install_venv"
+* Contributors: James Prestwood
+
 0.1.0 (2024-09-16)
 ------------------
 * Wrap binaries under install/lib/{PACKAGE}, not top level (#5)

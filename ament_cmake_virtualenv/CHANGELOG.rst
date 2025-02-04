@@ -2,6 +2,9 @@
 Changelog for package ament_cmake_virtualenv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.1.0 (2024-09-16)
 ------------------
 * Package wide linting fixes (#2)
