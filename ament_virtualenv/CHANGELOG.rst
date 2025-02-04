@@ -2,8 +2,8 @@
 Changelog for package ament_virtualenv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.0 (2025-02-04)
+------------------
 * Rename "install" to "install_venv" (#6)
   This script conflicts with the linux tool "install" which is used
   at least by preflight. Since this script isn't even used by
