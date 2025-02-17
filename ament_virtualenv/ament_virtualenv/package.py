@@ -220,7 +220,7 @@ class Package(object):
                     'with a lower case letter and only contain lower case letters, digits, '
                     'underscores, and dashes.' % self.name)
 
-        version_regexp = '^[0-9]+\.[0-9]+\.[0-9]+$'  # noqa: W605
+        version_regexp = r'^[0-9]+\.[0-9]+\.[0-9]+$'  # noqa: W605
         if not self.version:
             errors.append('Package version must not be empty')
         elif not re.match(version_regexp, self.version):
@@ -229,7 +229,7 @@ class Package(object):
                 % self.version
             )
         elif not re.match(
-            '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$',  # noqa: W605
+            r'^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$',  # noqa: W605
             self.version
         ):
             new_warnings.append(
@@ -395,8 +395,8 @@ class Person(object):
         if self.email is None:
             return
         _pattern = (
-            '^[-a-zA-Z0-9_%+]+(\.[-a-zA-Z0-9_%+]+)*'  # noqa: W605
-            '@[-a-zA-Z0-9%]+(\.[-a-zA-Z0-9%]+)*\.[a-zA-Z]{2,}$'  # noqa: W605
+            r'^[-a-zA-Z0-9_%+]+(\.[-a-zA-Z0-9_%+]+)*'  # noqa: W605
+            r'@[-a-zA-Z0-9%]+(\.[-a-zA-Z0-9%]+)*\.[a-zA-Z]{2,}$'  # noqa: W605
         )
         if not re.match(_pattern, self.email):
             raise InvalidPackage('Invalid email "%s" for person "%s"' % (self.email, self.name))
