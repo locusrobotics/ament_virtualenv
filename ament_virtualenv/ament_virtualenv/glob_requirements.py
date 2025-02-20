@@ -26,6 +26,7 @@ import argparse
 import sys
 import os
 
+from pathlib import Path
 from typing import List
 from catkin_pkg.package import Package
 
@@ -96,6 +97,15 @@ def find_in_workspaces(project, file, workspaces=[]):
             "\nCOLCON_PREFIX_PATH=" + os.environ.get('COLCON_PREFIX_PATH', 'NOT SET') +
             "\nCWD=" + os.getcwd()
         )
+
+    # The paths in "workspaces" will look something like (depending on logic above)
+    # <prefix>/install/<project>/../
+    # The issue here is <project> dir may not actually exist so below when we walk the
+    # directories it will ignore that folder since it doesn't exist. To fix this we
+    # need to resolve the paths so they point to valid directories, ignoring the di
+    # of the packages we're building which may not exist.
+    workspaces = [str(Path(path).resolve()) for path in workspaces]
+
     # now search the workspaces
     for workspace in (workspaces or []):
         for d, dirs, files in os.walk(workspace, topdown=True, followlinks=True):
