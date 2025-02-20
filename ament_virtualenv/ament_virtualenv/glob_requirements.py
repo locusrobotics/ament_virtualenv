@@ -29,6 +29,7 @@ import os
 from pathlib import Path
 from typing import List
 from catkin_pkg.package import Package
+from ament_index_python.packages import get_package_share_directory, PackageNotFoundError
 
 try:
     from ament_virtualenv.package import parse_package
@@ -48,11 +49,11 @@ def find_in_workspaces(project, file, workspaces=[]):
     # Add default workspace search paths
     ament_paths = os.environ.get('AMENT_PREFIX_PATH')
     if ament_paths is not None:
-        # AMENT_PREFIX_PATH points at install/<package>
+        # AMENT_PREFIX_PATH points at <prefix>/install
         ament_paths = ament_paths.split(os.pathsep)
         for path in ament_paths:
-            if ((os.path.sep + 'install' + os.path.sep) in path or
-               (os.path.sep + 'install_isolated' + os.path.sep) in path):
+            if ((os.path.sep + 'install') in path or
+               (os.path.sep + 'install_isolated') in path):
                 workspaces.append(os.path.join(path, '..'))
                 workspaces.append(os.path.join(path, '..', '..', 'src'))
                 break
@@ -61,11 +62,11 @@ def find_in_workspaces(project, file, workspaces=[]):
         # CMAKE_PREFIX_PATH (should contain the same information)
         cmake_paths = os.environ.get('CMAKE_PREFIX_PATH')
         if cmake_paths is not None:
-            # CMAKE_PREFIX_PATH points at install/<package> or install_isolated/<package>
+            # CMAKE_PREFIX_PATH points at <prefix>/install or <prefix>/install_isolated
             cmake_paths = cmake_paths.split(os.pathsep)
             for path in cmake_paths:
-                if ((os.path.sep + 'install' + os.path.sep) in path or
-                   (os.path.sep + 'install_isolated' + os.path.sep) in path):
+                if ((os.path.sep + 'install') in path or
+                   (os.path.sep + 'install_isolated') in path):
                     workspaces.append(os.path.join(path, '..'))
                     workspaces.append(os.path.join(path, '..', '..', 'src'))
                     break
@@ -85,10 +86,23 @@ def find_in_workspaces(project, file, workspaces=[]):
                     workspaces.append(path)
                     workspaces.append(os.path.join(path, '..', 'src'))
     if len(workspaces) == 0:
-        # final fallback: use working directory (usually src/<package>)
+        # final (local) fallback: use working directory (usually src/<package>)
         path = os.getcwd()
         if (os.path.sep + 'src') in path:
             workspaces.append(path)
+
+    # Above, all paths required an "install/" or "src/" folder in order to qualify
+    # as a workspace. This only applies to local workspaces but does not take into
+    # account any installed bundles. We should prefer local workspaces, but we
+    # should also include the bundle path in case the workspace found above either
+    # doesn't contain the package in question or if its ignored. Since the first
+    # match is used we are safe to append the bundle path unconditionally.
+    try:
+        path = get_package_share_directory(project)
+        workspaces.append(path)
+    except PackageNotFoundError:
+        pass
+
     if len(workspaces) == 0:
         raise RuntimeError(
             "[ament_virtualenv] Failed to find any workspaces." +
