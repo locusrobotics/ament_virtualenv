@@ -52,20 +52,12 @@ will not work as expected.")
         )
       endif()
 
-      set(program_install_location ${AMENT_PACKAGE_SHARE_DESTINATION}/ament_virtualenv_scripts)
-
-      # For devel-space support, we generate a bash script that invokes the source script via the virtualenv's
-      # python interpreter.
-      set(devel_program ${AMENT_DEVEL_PREFIX}/${ARG_DESTINATION}/${program_basename})
-      configure_file(${ament_virtualenv_CMAKE_DIR}/templates/program.devel.in ${devel_program})
-      execute_process(
-        COMMAND ${AMENT_ENV} chmod +x ${devel_program}
-      )
+      set(program_install_location ament_virtualenv_scripts)
 
       # For install-space support, we install the source script, and then generate a bash script to invoke it using
       # the virtualenv's python interpreter.
       set(install_program ${CMAKE_BINARY_DIR}/${program_basename})
-      configure_file(${ament_virtualenv_CMAKE_DIR}/templates/program.install.in ${install_program})
+      configure_file(${ament_cmake_virtualenv_DIR}/templates/program.install.in ${install_program})
       execute_process(
         COMMAND ${AMENT_ENV} chmod +x ${install_program}
       )
