@@ -86,10 +86,14 @@ def find_in_workspaces(project, file, workspaces=[]):
                     workspaces.append(path)
                     workspaces.append(os.path.join(path, '..', 'src'))
     if len(workspaces) == 0:
-        # final (local) fallback: use working directory (usually src/<package>)
-        path = os.getcwd()
-        if (os.path.sep + 'src') in path:
-            workspaces.append(path)
+        # If $CWD/src exists, append that
+        path = Path(os.getcwd()) / "src"
+        if path.exists():
+            workspaces.append(str(path))
+
+        # Also append the current directory, in case we're building from the
+        # package directory itself
+        workspace.append(os.getcwd())
 
     # Above, all paths required an "install/" or "src/" folder in order to qualify
     # as a workspace. This only applies to local workspaces but does not take into
