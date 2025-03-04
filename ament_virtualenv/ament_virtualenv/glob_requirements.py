@@ -93,7 +93,7 @@ def find_in_workspaces(project, file, workspaces=[]):
 
         # Also append the current directory, in case we're building from the
         # package directory itself
-        workspace.append(os.getcwd())
+        workspaces.append(os.getcwd())
 
     # Above, all paths required an "install/" or "src/" folder in order to qualify
     # as a workspace. This only applies to local workspaces but does not take into
