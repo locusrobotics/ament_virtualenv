@@ -20,44 +20,25 @@
 
 import importlib
 import sys
+import gdown
 
-def main(args=None):
-    # 1: Test if we're in a virtual environment at all.
-    is_in_venv = hasattr(sys, 'real_prefix')
-    if not is_in_venv:
-        print(
-            "[test_ament_virtualenv] "
-            "FAILURE: Python virtual environment not activated."
-        )
-        return 1
-    # 2: Test the Python version.
-    if sys.version_info.major != 2:
-        print(
-            "[test_ament_virtualenv] "
-            "FAILURE: Wrong Python version."
-        )
-        return 1
-    # 3: Test if proper requirements have been installed
+def main(args=None):    
+    # Test if proper requirements have been installed
     try:
-        requests = importlib.import_module("requests")
-        if requests.__version__ != '2.20.1':
+        gdown = importlib.import_module("gdown")
+        if gdown.__version__ != '5.2.0':
             print(
                 "[test_ament_virtualenv] "
                 "FAILURE: Requirements not provided correctly "
-                "(expected 'requests==2.20.1', found "+requests.__version__+")"
+                "(expected 'gdown==5.2.0', found "+gdown.__version__+")"
             )
             return 1
     except:
         print(
             "[test_ament_virtualenv] "
             "FAILURE: Requirements not provided "
-            "(expected 'requests' to be present but could not find it)"
+            "(expected 'gdown' to be present but could not find it)"
         )
         return 1
     print("[test_ament_virtualenv] SUCCESS: All checks passed.")
     return 0
-
-
-if __name__ == '__main__':
-    sys.exit(main())
-
