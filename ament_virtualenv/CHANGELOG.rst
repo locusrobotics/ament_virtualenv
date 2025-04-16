@@ -2,8 +2,8 @@
 Changelog for package ament_virtualenv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.1 (2025-04-16)
+------------------
 * Fix cmake program wrap (#9)
   * Fix broken ament_install_python function
   The upstream package had copied this from catkin_virtualenv and
