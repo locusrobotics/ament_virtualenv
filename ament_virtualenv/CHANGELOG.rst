@@ -2,8 +2,8 @@
 Changelog for package ament_virtualenv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2025-06-06)
+------------------
 * Fix typo, workspace -> workspaces (#11)
 * Fix building from package directory (#10)
   If building from a directory that doesn't contain "src"
