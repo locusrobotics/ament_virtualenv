@@ -2,6 +2,9 @@
 Changelog for package ament_virtualenv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.3.0 (2025-06-06)
 ------------------
 * Fix typo, workspace -> workspaces (#11)
