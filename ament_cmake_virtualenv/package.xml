@@ -22,7 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <package format="2">
   <name>ament_cmake_virtualenv</name>
-  <version>0.3.0</version>
+  <version>0.3.1</version>
   <description>Bundle python requirements in a ament package via virtualenv.</description>
 
   <maintainer email="v-krichenbauer7715@esol.co.jp">Max Krichenbauer</maintainer>
