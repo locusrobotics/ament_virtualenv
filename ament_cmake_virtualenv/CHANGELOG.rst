@@ -2,6 +2,9 @@
 Changelog for package ament_cmake_virtualenv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.4.0 (2025-09-30)
 ------------------
 
