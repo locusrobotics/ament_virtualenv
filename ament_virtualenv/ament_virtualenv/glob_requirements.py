@@ -124,12 +124,17 @@ def find_in_workspaces(project, file, workspaces=[]):
     # of the packages we're building which may not exist.
     workspaces = [str(Path(path).resolve()) for path in workspaces]
 
+    for workspace in (workspaces or []):
+        # Shortcut so we don't have to search the entire install tree
+        if os.path.exists(f"{workspace}/{project}/share/{project}/{file}"):
+            return f"{workspace}/{project}/share/{project}/{file}"
+
     # now search the workspaces
     for workspace in (workspaces or []):
         for d, dirs, files in os.walk(workspace, topdown=True, followlinks=True):
             if (('CATKIN_IGNORE' in files) or
                ('COLCON_IGNORE' in files) or
-               ('AMENT_IGNORE' in files)):
+               ('AMENT_IGNORE' in files)) and d != workspace:
                 del dirs[:]
                 continue
             dirname = os.path.basename(d)
