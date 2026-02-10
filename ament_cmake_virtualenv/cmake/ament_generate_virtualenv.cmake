@@ -17,6 +17,8 @@ function(ament_generate_virtualenv)
   set(multiValueArgs EXTRA_PIP_ARGS)
   cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+  message(STATUS "Current source dir ${CMAKE_CURRENT_SOURCE_DIR}")
+
   # Check if this package already has a virtualenv target before creating one
   if(TARGET ${PROJECT_NAME}_generate_virtualenv)
     message(WARNING "ament_generate_virtualenv was called twice")
@@ -68,7 +70,7 @@ function(ament_generate_virtualenv)
   endif()
   execute_process(
     COMMAND ${glob_requirements_BIN}
-      --package-name ${PROJECT_NAME} ${glob_args}
+      --package-name ${PROJECT_NAME} --source-dir ${CMAKE_CURRENT_SOURCE_DIR} ${glob_args}
     OUTPUT_VARIABLE requirements_list
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )

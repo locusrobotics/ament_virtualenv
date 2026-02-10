@@ -47,16 +47,17 @@ except ImportError:
 
 def find_in_workspaces(project, file, workspaces=[]):
     # Add default workspace search paths
-    ament_paths = os.environ.get('AMENT_PREFIX_PATH')
-    if ament_paths is not None:
-        # AMENT_PREFIX_PATH points at <prefix>/install
-        ament_paths = ament_paths.split(os.pathsep)
-        for path in ament_paths:
-            if ((os.path.sep + 'install') in path or
-               (os.path.sep + 'install_isolated') in path):
-                workspaces.append(os.path.join(path, '..'))
-                workspaces.append(os.path.join(path, '..', '..', 'src'))
-                break
+    if len(workspaces) == 0:
+        ament_paths = os.environ.get('AMENT_PREFIX_PATH')
+        if ament_paths is not None:
+            # AMENT_PREFIX_PATH points at <prefix>/install
+            ament_paths = ament_paths.split(os.pathsep)
+            for path in ament_paths:
+                if ((os.path.sep + 'install') in path or
+                (os.path.sep + 'install_isolated') in path):
+                    workspaces.append(os.path.join(path, '..'))
+                    workspaces.append(os.path.join(path, '..', '..', 'src'))
+                    break
     if len(workspaces) == 0:
         # if AMENT_PREFIX_PATH wasn't set, we can fall back on
         # CMAKE_PREFIX_PATH (should contain the same information)
@@ -148,13 +149,14 @@ def find_in_workspaces(project, file, workspaces=[]):
 AMENT_VIRTUALENV_TAGNAME = "pip_requirements"
 
 
-def parse_exported_requirements(package: Package) -> List[str]:
+def parse_exported_requirements(package: Package, source_dir: str) -> List[str]:
     requirements_list = []
     for export in package.exports:
         if export.tagname == AMENT_VIRTUALENV_TAGNAME:
             requirements_path = find_in_workspaces(
                 project=package.name,
-                file=export.content
+                file=export.content,
+                workspaces=[source_dir]
             )
             if not requirements_path:
                 print(
@@ -172,9 +174,12 @@ def parse_exported_requirements(package: Package) -> List[str]:
     return requirements_list
 
 
-def process_package(package_name, soft_fail=True):
+def process_package(package_name, source_dir=None, soft_fail=True):
     # type: (str) -> List[str], List[str]
     workspaces = []
+    if source_dir:
+        workspaces.append(source_dir)
+
     package_path = find_in_workspaces(
         project=package_name,
         file="package.xml",
@@ -190,10 +195,10 @@ def process_package(package_name, soft_fail=True):
     else:
         package = parse_package(package_path)
         dependencies = package.build_depends + package.test_depends
-        return parse_exported_requirements(package), dependencies
+        return parse_exported_requirements(package, source_dir), dependencies
 
 
-def glob_requirements(package_name, no_deps):
+def glob_requirements(package_name, source_dir, no_deps):
     # type: (str) -> int
     package_queue = Queue()
     package_queue.put(package_name)
@@ -206,7 +211,7 @@ def glob_requirements(package_name, no_deps):
         if queued_package not in processed_packages:
             processed_packages.add(queued_package)
             requirements, dependencies = process_package(
-                package_name=queued_package, soft_fail=(queued_package != package_name))
+                package_name=queued_package, source_dir=source_dir, soft_fail=(queued_package != package_name))
             requirements_list = requirements_list + requirements
 
             if not no_deps:
@@ -218,6 +223,7 @@ def glob_requirements(package_name, no_deps):
 def main(argv=sys.argv[1:]):
     parser = argparse.ArgumentParser()
     parser.add_argument('--package-name', type=str, required=True)
+    parser.add_argument('--source-dir', type=str)
     parser.add_argument('--no-deps', action="store_true")
     args, unknown = parser.parse_known_args()
     print(glob_requirements(**vars(args)))
