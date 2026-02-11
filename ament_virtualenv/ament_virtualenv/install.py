@@ -27,6 +27,8 @@ import sys
 import subprocess
 import shutil
 import argparse
+
+from pathlib import Path
 from setuptools.command.install import install
 from setuptools import Distribution
 from typing import List, Dict
@@ -70,7 +72,8 @@ def install_venv(
         scripts_base: str,
         scripts: List[str] = [],
         python_version: str = '3',
-        use_system_packages: bool = True
+        use_system_packages: bool = True,
+        source_dir = None
 ):
     venv_install_dir = os.path.join(install_base, 'venv')
     #
@@ -100,7 +103,7 @@ def install_venv(
         requirements_list = requirements_list.decode("utf-8").strip()
     else:
         # Use the module directly
-        requirements_list = glob_requirements(package_name=package_name, no_deps=False)
+        requirements_list = glob_requirements(package_name=package_name, source_dir=source_dir, no_deps=False)
     # ^ glob_requirements
     #
     # combine_requirements --requirements-list a/requirements.txt;b/requirements.txt
@@ -233,10 +236,13 @@ class AmentVirtualenvInstall(install):
     def run(self):
         super().run()
 
+        source_dir = Path(self.distribution.script_name).resolve().parent
+
         install_venv(
             install_base=self.install_base,
             package_name=self.config_vars["dist_name"],
             scripts_base=self.install_scripts,
+            source_dir=str(source_dir),
             scripts=_get_console_scripts(self.distribution.entry_points),
             **_get_extra_arguments(self.distribution)
         )
