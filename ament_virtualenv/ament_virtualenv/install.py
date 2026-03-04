@@ -75,7 +75,7 @@ def install_venv(
         use_system_packages: bool = True,
         source_dir = None
 ):
-    venv_install_dir = os.path.join(install_base, 'share', 'venv')
+    venv_install_dir = os.path.join(install_base, 'share', package_name, 'venv')
     #
     # Build the virtual environment
     python = shutil.which("python3")
@@ -108,7 +108,7 @@ def install_venv(
     #
     # combine_requirements --requirements-list a/requirements.txt;b/requirements.txt
     #                      --output-file x/generated_requirements.txt
-    generated_requirements = os.path.join(install_base,
+    generated_requirements = os.path.join(install_base, 'share', package_name,
                                           package_name + '-generated_requirements.txt')
     if ament_virtualenv_import_failed:
         combine_requirements_py = find_program(name='combine_requirements.py',
