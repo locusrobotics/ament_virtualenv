@@ -75,7 +75,7 @@ def install_venv(
         use_system_packages: bool = True,
         source_dir = None
 ):
-    venv_install_dir = os.path.join(install_base, 'venv')
+    venv_install_dir = os.path.join(install_base, 'share', 'venv')
     #
     # Build the virtual environment
     python = shutil.which("python3")
