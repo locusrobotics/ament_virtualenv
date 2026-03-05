@@ -46,62 +46,9 @@ except ImportError:
 
 
 def find_in_workspaces(project, file, workspaces=[]):
-    # Add default workspace search paths
-    if len(workspaces) == 0:
-        ament_paths = os.environ.get('AMENT_PREFIX_PATH')
-        if ament_paths is not None:
-            # AMENT_PREFIX_PATH points at <prefix>/install
-            ament_paths = ament_paths.split(os.pathsep)
-            for path in ament_paths:
-                if ((os.path.sep + 'install') in path or
-                (os.path.sep + 'install_isolated') in path):
-                    workspaces.append(os.path.join(path, '..'))
-                    workspaces.append(os.path.join(path, '..', '..', 'src'))
-                    break
-    if len(workspaces) == 0:
-        # if AMENT_PREFIX_PATH wasn't set, we can fall back on
-        # CMAKE_PREFIX_PATH (should contain the same information)
-        cmake_paths = os.environ.get('CMAKE_PREFIX_PATH')
-        if cmake_paths is not None:
-            # CMAKE_PREFIX_PATH points at <prefix>/install or <prefix>/install_isolated
-            cmake_paths = cmake_paths.split(os.pathsep)
-            for path in cmake_paths:
-                if ((os.path.sep + 'install') in path or
-                   (os.path.sep + 'install_isolated') in path):
-                    workspaces.append(os.path.join(path, '..'))
-                    workspaces.append(os.path.join(path, '..', '..', 'src'))
-                    break
-    if len(workspaces) == 0:
-        # COLCON_PREFIX_PATH points to the `install/` directory,
-        # which is fine when ament_python is used as build tool
-        # (ament_python copies the files right away),
-        # but ament_cmake does not copy the files until after the
-        # build, which is too late. So for ament_cmake we also
-        # need to add the neighboring `src/` folder to the seach
-        # (eg.: `install/../src/`)
-        colcon_paths = os.environ.get('COLCON_PREFIX_PATH')
-        if colcon_paths is not None:
-            colcon_paths = colcon_paths.split(os.pathsep)
-            for path in colcon_paths:
-                if (os.path.sep + 'install') in path or (os.path.sep + 'install_isolated') in path:
-                    workspaces.append(path)
-                    workspaces.append(os.path.join(path, '..', 'src'))
-    if len(workspaces) == 0:
-        # If $CWD/src exists, append that
-        path = Path(os.getcwd()) / "src"
-        if path.exists():
-            workspaces.append(str(path))
-
-        # Also append the current directory, in case we're building from the
-        # package directory itself
-        workspaces.append(os.getcwd())
-
-    # Above, all paths required an "install/" or "src/" folder in order to qualify
-    # as a workspace. This only applies to local workspaces but does not take into
-    # account any installed bundles. We should prefer local workspaces, but we
-    # should also include the bundle path in case the workspace found above either
-    # doesn't contain the package in question or if its ignored. Since the first
-    # match is used we are safe to append the bundle path unconditionally.
+    # A source directory should be passed within 'workspaces' (i.e. a local workspace),
+    # but if not try and get the package path from ament. This will handle packages
+    # that aren't in the local workspace.
     try:
         path = get_package_share_directory(project)
         workspaces.append(path)
@@ -121,7 +68,7 @@ def find_in_workspaces(project, file, workspaces=[]):
     # <prefix>/install/<project>/../
     # The issue here is <project> dir may not actually exist so below when we walk the
     # directories it will ignore that folder since it doesn't exist. To fix this we
-    # need to resolve the paths so they point to valid directories, ignoring the di
+    # need to resolve the paths so they point to valid directories, ignoring the dir
     # of the packages we're building which may not exist.
     workspaces = [str(Path(path).resolve()) for path in workspaces]
 
@@ -130,7 +77,8 @@ def find_in_workspaces(project, file, workspaces=[]):
         if os.path.exists(f"{workspace}/{project}/share/{project}/{file}"):
             return f"{workspace}/{project}/share/{project}/{file}"
 
-    # now search the workspaces
+    # Now search the workspaces. Since this may point to the distro root which
+    # will contain ignore files we need to ignore that directory i.e. d != workspace.
     for workspace in (workspaces or []):
         for d, dirs, files in os.walk(workspace, topdown=True, followlinks=True):
             if (('CATKIN_IGNORE' in files) or
