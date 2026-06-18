@@ -2,8 +2,8 @@
 Changelog for package ament_cmake_virtualenv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.0 (2026-06-18)
+------------------
 * Fix non merge install (#13)
   * Fix non-merge install workspaces
   Ignore files may be sitting at the top level directory, which
