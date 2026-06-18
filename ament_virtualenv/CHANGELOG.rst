@@ -2,6 +2,27 @@
 Changelog for package ament_virtualenv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix non merge install (#13)
+  * Fix non-merge install workspaces
+  Ignore files may be sitting at the top level directory, which
+  prevents the search from coming up with anything. In addition a
+  shortcut was added to check for the package much faster than
+  iterating the entire install tree.
+  * Pass in source directory so files can be found
+  * Adapt source dir to work with pure python packages
+  * Install venv under a packages share directory
+  The venv folder was getting placed at the root install folder which
+  basically causes every package in the workspace to overwrite the venv
+  of other packages, last package wins...
+  * Fix venv location again, and generated requirements file
+  * Remove unreliable/unneeded find_in_workspace code
+  By passing the source directory as well as using the proper ament
+  API to find the package prefix, searching the env vars with assumed
+  paths isn't reliable or useful anymore.
+* Contributors: James Prestwood
+
 0.5.0 (2026-03-03)
 ------------------
 
