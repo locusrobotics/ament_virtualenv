@@ -1,3 +1,5 @@
+import os
+
 from setuptools import setup
 import setuptools.command.install
 import ament_virtualenv.install
@@ -7,9 +9,11 @@ package_name = 'test_ament_virtualenv'
 class InstallCommand(setuptools.command.install.install):
     def run(self):
         super().run()
-        ament_virtualenv.install.install_venv(self.install_base, package_name)
-        # instead of self.install_base we may also use:
-        # self.config_vars['platbase'] or self.config_vars['base']
+        scripts_base = os.path.join(self.install_base, "lib/{}".format(package_name))
+        ament_virtualenv.install.install_venv(install_base = self.install_base,
+                                              package_name = package_name,
+                                              scripts_base = scripts_base,
+                                              )
         return
 
 setup(
@@ -20,7 +24,10 @@ setup(
     version='0.0.5',
     packages=[package_name],
     data_files=[
-        ('share/'+package_name, ['package.xml', 'requirements.txt']),
+        ('share/ament_index/resource_index/packages',
+         ['resource/' + package_name]),
+        ('share/' + package_name, ['package.xml', 'requirements.txt']),
+        ('lib/' + package_name, ['scripts/main.py'])
     ],
     install_requires=['setuptools'],
     zip_safe=False,
@@ -38,9 +45,4 @@ setup(
     description='Example of using ament_virtualenv.',
     license='Apache License, Version 2.0',
     tests_require=['pytest'],
-    entry_points={
-        'console_scripts': [
-            'test_ament_virtualenv = test_ament_virtualenv.test_ament_virtualenv:main',
-        ],
-    },
 )
